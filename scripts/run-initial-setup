@@ -37,7 +37,7 @@ if [ $GUI_INSTALLED -eq 1 ]; then
         # don't run the GUI on text-only systems (default.target != graphical.target),
         # users are not expecting a graphical interface do start in such case
         # and there might not even be any displays connected
-        if [ "$CURRENT_DEFAULT_TARGET" == "$GRAPHICAL_TARGET" ]; then
+        if [ "$CURRENT_DEFAULT_TARGET" == "$GRAPHICAL_TARGET" ] || [ -n "$DISPLAY" ] ; then
             echo "Starting Initial Setup GUI" | systemd-cat -t initial-setup -p 6
             ${START_GUI_COMMAND}
         else
