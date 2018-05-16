@@ -4,6 +4,8 @@ import os
 
 from pyanaconda.ui.common import collect
 from pyanaconda.constants import FIRSTBOOT_ENVIRON
+from pyanaconda.i18n import N_
+from pyanaconda.ui.categories import SpokeCategory
 
 # a set of excluded console names
 # - console, tty, tty0 -> these appear to be just aliases to the  default console,
@@ -84,3 +86,9 @@ def list_usable_consoles_for_tui():
     """
     console_names = [c for c in os.listdir("/sys/class/tty/") if console_filter(c)]
     return sorted(console_names)
+
+class LicensingCategory(SpokeCategory):
+    displayOnHubGUI = "ProgressHub"
+    displayOnHubTUI = "SummaryHub"
+    sortOrder = 100
+    title = N_("LICENSING")

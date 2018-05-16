@@ -9,6 +9,7 @@ import argparse
 import traceback
 from pyanaconda.users import Users
 from initial_setup.post_installclass import PostInstallClass
+from initial_setup.product import eula_available
 from initial_setup import initial_setup_log
 from pyanaconda import iutil
 from pykickstart.constants import FIRSTBOOT_RECONFIG
@@ -76,6 +77,8 @@ class InitialSetup(object):
         self.gui_mode = gui_mode
         # kickstart data
         self.data = None
+        # reboot on quit flag
+        self._reboot_on_quit = False
 
         # parse any command line arguments
         args = self._parse_arguments()
@@ -172,6 +175,11 @@ class InitialSetup(object):
             return "gui"
         else:
             return "tui"
+
+    @property
+    def reboot_on_quit(self):
+        # should the machine be rebooted once Initial Setup quits
+        return self._reboot_on_quit
 
     def _parse_arguments(self):
         """Parse command line arguments"""
@@ -336,6 +344,11 @@ class InitialSetup(object):
         # Start the application
         log.info("starting the UI")
         ret = ui.run()
+
+        # we need to reboot the machine if there is an EULA, that was not agreed
+        if eula_available() and  not self.data.eula.agreed:
+            log.warning("EULA has not been agreed - the system will be rebooted.")
+            self._reboot_on_quit = True
 
         # TUI returns False if the app was ended prematurely
         # all other cases return True or None
